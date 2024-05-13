@@ -1,0 +1,5 @@
+.venv/
+hugging_face_models/
+__pycache__/
+*.pyc
+download_model.py
