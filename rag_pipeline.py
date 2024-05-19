@@ -4,6 +4,9 @@ from langchain import embeddings
 from transformers import AutoTokenizer, AutoModelForCausalLM
 import json
 from langchain import PromptTemplate
+from nltk.tokenize import sent_tokenize
+from extractive_summarizer import get_extractive_summary
+import re
 
 chapter_to_title_mapper={
 '1':'How to Build a Universe',
@@ -37,6 +40,11 @@ chapter_to_title_mapper={
 '29':'THE RESTLESS APE',
 '30':'GOOD-BYE'   
 }
+def preprocess_text(text):
+    text = text.lower()
+    text = re.sub("[^a-z0-9]"," ",text)
+    text = re.sub("(\s)+"," ",text)
+    return text
 
 def get_relevant_document_page_content(documents, chapter_number):
 
@@ -79,8 +87,11 @@ def invoke_rag_pipeline(chapter_number, summary_words=50):
 
     relevant_documents = db.get_relevant_documents(chapter_title)
     context = get_relevant_document_page_content(relevant_documents,chapter_number)
+    num_sentences = len(sent_tokenize(context))
+    num_sentences = min(100,num_sentences//4) ## used for extractive summary module
     json.dump(context,open('context.txt','w'))
-    prompt = get_prompt(context,summary_words)
+    clean_context = preprocess_text(get_extractive_summary('context.txt',num_sentences))
+    prompt = get_prompt(clean_context,summary_words)
     json.dump(prompt, open('prompt.txt','w'))
     output = load_model_and_generate(prompt, summary_words)
     json.dump(output, open('output.json','w'))
