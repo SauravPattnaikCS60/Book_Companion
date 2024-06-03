@@ -3,17 +3,19 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from pdf_extraction import extract_content
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
+import json
 
 # def create_and_load_vectorstore():
 
 def chunking_and_splitting():
     chapter_wise_content = extract_content()
+    json.dump(chapter_wise_content, open('intermediate_files/chapter_wise_content.json','w'))
     documents = []
-    for chapter, content in chapter_wise_content.items():
-        doc = [Document(page_content=content,metadata={"source": chapter})]
+    for _, content in chapter_wise_content.items():
+        doc = [Document(page_content=content)]
         documents.extend(doc)
     
-    recursive_text_splitter = RecursiveCharacterTextSplitter(chunk_size=4000,chunk_overlap=800,separators=r"\n\n")
+    recursive_text_splitter = RecursiveCharacterTextSplitter(chunk_size=1024,chunk_overlap=256,separators=r"\n\n")
     documents = recursive_text_splitter.split_documents(documents)
     return documents
 
