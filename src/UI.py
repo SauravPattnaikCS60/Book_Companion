@@ -3,54 +3,69 @@ from pdf_extraction import extract_content
 from pipeline_summary import invoke_pipeline_summary,chapter_to_title_mapper
 from rag_pipeline_qa import invoke_rag_pipeline_qa
 
-
 def main():
     st.title("Book Companion")
 
-    chapters_dict =extract_content() 
-    selected_chapter = st.selectbox("Select Chapter:", list(chapters_dict.keys()))
-    chapter_text = chapters_dict[selected_chapter]
-    num_words = st.slider("Select the number of words in the summary", 50, 200, 50)
-    #tab1, tab2 = st.tabs(["Summary", "Chapter Content & Q&A"])
-    summary_button = st.checkbox('Generate Summary')
+    chapters_dict = extract_content()  
 
-    if summary_button:
-        
-        with st.spinner('Generating Summary...'):
-           summarized_text = invoke_pipeline_summary(selected_chapter, num_words)
+  
+    if 'selected_chapter_no' not in st.session_state:
+        st.session_state.selected_chapter_no = 1
+    if 'num_words' not in st.session_state:
+        st.session_state.num_words = 50
+    st.sidebar.title("Navigation")
+    selected_tab = st.sidebar.radio("Go to", ["Home", "Summary", "Q&A"])
 
-        # with tab1:
-        st.subheader("Chapter Name")
-        chapter_name=chapter_to_title_mapper[str(selected_chapter)]
-        st.write(chapter_name)
-        st.subheader("Summary")
-        with st.expander("View Summary"):
-            st.write(summarized_text)
+    if selected_tab == "Home":
+        st.header("Home")
+        chapter_options = [f"{num}: {name}" for num, name in chapter_to_title_mapper.items()]
+        selected_chapter_option = st.selectbox("Select Chapter:", chapter_options)
+        st.session_state.selected_chapter_no = int(selected_chapter_option.split(":")[0])
 
-    qa_button = st.checkbox('Q/A')
-    
-    if qa_button:
-        st.subheader("Chapter Content")
-        with st.expander("View Chapter Content"):
-            st.write(
+        st.session_state.num_words = st.slider("Select the number of words in the summary", 50, 200, 50)
+
+    if selected_tab == "Summary":
+        st.header("Summary")
+        if st.session_state.selected_chapter_no is not None:
+            chapter_text = chapters_dict[st.session_state.selected_chapter_no]
+            with st.spinner('Generating Summary...'):
+              summarized_text =invoke_pipeline_summary(st.session_state.selected_chapter_no, st.session_state.num_words) 
+
+            st.subheader("Chapter Name")
+            chapter_name = chapter_to_title_mapper.get(str(st.session_state.selected_chapter_no), "Unknown Chapter")
+            st.write(chapter_name)
+            st.subheader("Summary")
+            with st.expander("View Summary"):
+                st.write(summarized_text)
+        else:
+            st.write("Please select a chapter and the number of words from the Home tab.")
+
+    if selected_tab=="Q&A":
+        st.header("Q&A")
+        if st.session_state.selected_chapter_no is not None:
+            chapter_text = chapters_dict[st.session_state.selected_chapter_no]
+            st.subheader("Chapter Content")
+            with st.expander("View Chapter Content"):
+                st.write(
                     f"""
                     <div style="height: 400px; overflow-y: scroll; border: 1px solid #ccc; padding: 10px;">
                     {chapter_text}</div>
-                    """, 
+                    """,
                     unsafe_allow_html=True
                 )
-        st.subheader("Ask a Question")
-        user_question = st.text_input("Enter your question here:")
-        get_answer = st.button('Get Answer')
-        
-        if user_question:
-            if get_answer:
+
+            st.subheader("Ask a Question")
+            user_question = st.text_input("Enter your question here:")
+            get_answer = st.button('Get Answer')
+
+            if user_question and get_answer:
                 with st.spinner('Processing your question...'):
-                    answer = invoke_rag_pipeline_qa(user_question)
-
+                    answer =invoke_rag_pipeline_qa(user_question)
                 with st.expander("View Answer"):
-                    st.write(answer)            
-
+                    st.write(answer)
+        else:
+            st.write("Please select a chapter and the number of words from the Home tab.")
+    
             
 
 if __name__ == '__main__':
