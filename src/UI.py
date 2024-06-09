@@ -64,7 +64,7 @@ def main():
                 with st.expander("View Answer"):
                     st.write(answer)
         else:
-            st.write("Please select a chapter and the number of words from the Home tab.")
+            st.write("Please select a chapter and the number of words from the Home tab.")#
     
             
 
