@@ -9,7 +9,6 @@ import re
 import warnings
 warnings.filterwarnings('ignore')
 
-
 def preprocess_text(text):
     text = text.lower()
     text = re.sub("[^a-z0-9]"," ",text)
@@ -51,7 +50,6 @@ def invoke_rag_pipeline_qa(query):
 
     relevant_documents = db.get_relevant_documents(query)
     context = get_relevant_document_page_content(relevant_documents)
-    print(context)
     num_sentences = len(sent_tokenize(context))
     num_sentences = min(100,num_sentences//4) ## used for extractive summary module
     json.dump(context,open('intermediate_files/qa_context.txt','w'))

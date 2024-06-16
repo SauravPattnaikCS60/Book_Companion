@@ -2,6 +2,8 @@ import streamlit as st
 from pdf_extraction import extract_content
 from pipeline_summary import invoke_pipeline_summary,chapter_to_title_mapper
 from rag_pipeline_qa import invoke_rag_pipeline_qa
+import json
+
 
 def main():
     st.title("Book Companion")
@@ -29,8 +31,9 @@ def main():
         if st.session_state.selected_chapter_no is not None:
             chapter_text = chapters_dict[st.session_state.selected_chapter_no]
             with st.spinner('Generating Summary...'):
-              summarized_text =invoke_pipeline_summary(st.session_state.selected_chapter_no, st.session_state.num_words) 
-
+                summarized_text =invoke_pipeline_summary(st.session_state.selected_chapter_no, st.session_state.num_words) 
+                # summarized_text = json.load(open('intermediate_files/summary_output.json','r'))
+            
             st.subheader("Chapter Name")
             chapter_name = chapter_to_title_mapper.get(str(st.session_state.selected_chapter_no), "Unknown Chapter")
             st.write(chapter_name)
@@ -61,6 +64,7 @@ def main():
             if user_question and get_answer:
                 with st.spinner('Processing your question...'):
                     answer =invoke_rag_pipeline_qa(user_question)
+                    # answer = json.load(open('intermediate_files/qa_output.json','r'))
                 with st.expander("View Answer"):
                     st.write(answer)
         else:
