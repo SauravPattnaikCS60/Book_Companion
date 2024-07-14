@@ -9,38 +9,7 @@ from load_model_and_generate_response import generate_response
 from output_parsing import parse_output_for_ui
 warnings.filterwarnings('ignore')
 
-chapter_to_title_mapper={
-'1':'How to Build a Universe',
-'2':'Welcome to the Solar System ',
-'3':'The Reverend Evans\'s Universe',
-'4':'The Measure of Things',
-'5':'The Stone-Breakers',
-'6':'Science Red in Tooth and Claw',
-'7':'Elemental Matters',
-'8':'Einstein\'s Universe',
-'9':'The Mighty Atom',
-'10':'Getting the Lead Out',
-'11':'Muster Mark\'s Quarks',
-'12':'The Earth Moves',
-'13':'Bang!',
-'14':'The Fire Below',
-'15':'Dangerous Beauty',
-'16':'Lonely Planet',
-'17':'Into the Troposphere',
-'18':'THE BOUNDING MAIN',
-'19':'THE RISE OF LIFE',
-'20':'SMALL WORLD',
-'21':'LIFE GOES ON',
-'22':'GOOD-BYE TO ALL THAT',
-'23':'THE RICHNESS OF BEING',
-'24':'CELLS',
-'25':'DARWIN’S SINGULAR NOTION',
-'26':'THE STUFF OF LIFE',
-'27':'Ice Time',
-'28':'The Mysterious Biped',
-'29':'THE RESTLESS APE',
-'30':'GOOD-BYE'   
-}
+
 def preprocess_text(text):
     text = text.lower()
     text = re.sub("[^a-z0-9]"," ",text)
@@ -77,7 +46,7 @@ def invoke_pipeline_summary(chapter_number, summary_words=50):
     output = parse_output_for_ui(output)
     return output
 
-if __name__ == '__main__':
-    chapter_number = "6"
-    print(f'Chapter invoked : {chapter_to_title_mapper[str(chapter_number)]}')
-    print(invoke_pipeline_summary(chapter_number,250))
+# if __name__ == '__main__':
+#     chapter_number = "6"
+#     print(f'Chapter invoked : {chapter_to_title_mapper[str(chapter_number)]}')
+#     print(invoke_pipeline_summary(chapter_number,250))
