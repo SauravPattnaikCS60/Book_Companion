@@ -28,7 +28,6 @@ chapter_to_title_mappers={
     "3": "Viking Sailors and Ships",
     "4": "Eric the Red",
     "5": "Leif Eriksson",
-    "6": "Viking Gods and Myths"
 },
  "Introduction to ML":{
     "1": "Preliminaries",
@@ -41,8 +40,7 @@ chapter_to_title_mappers={
     "8": "Computational Learning Theory",
     "9": "Unsupervised Learning",
     "10": "Temporal-Difference Learning",
-    "11": "Delayed-Reinforcement Learning",
-    "12": "Explanation-Based Learning"
+    "11": "Delayed-Reinforcement Learning"
 },
 "A Short History of Nearly Everything":{
 '1':'How to Build a Universe',
@@ -78,9 +76,9 @@ chapter_to_title_mappers={
 }
 }
 book_file_mapping = {
-        "Programming Python": 'data/book1.pdf',
-        "Vikings": 'data/book2.pdf',
-        "Introduction to ML":'data/book3.pdf',
-        "A Short History of Nearly Everything":'data/book4.pdf'
+        "Programming Python": 'data/book1.json',
+        "Vikings": 'data/book2.json',
+        "Introduction to ML":'data/book3.json',
+        "A Short History of Nearly Everything":'data/book4.json'
 }
-chapter_numbers_mapper = {"A Short History of Nearly Everything":tuple([str(number) for number in range(0,30)]),"Programming Python":tuple([f"CHAPTER {number}" for number in range(0, 21)]),"Vikings":tuple([f"Chapter {number}" for number in range(1, 7)]),"Introduction to ML":tuple([f"Chapter {number}" for number in range(1, 13)])}
+#chapter_numbers_mapper = {"A Short History of Nearly Everything":tuple([str(number) for number in range(0,30)]),"Programming Python":tuple([f"CHAPTER {number}" for number in range(0, 21)]),"Vikings":tuple([f"Chapter {number}" for number in range(1, 6)]),"Introduction to ML":tuple([f"Chapter {number}" for number in range(1, 12)])}

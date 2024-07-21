@@ -3,7 +3,7 @@ from pdf_extraction import extract_content
 from pipeline_summary import invoke_pipeline_summary
 from rag_pipeline_qa import invoke_rag_pipeline_qa
 import json
-from config import chapter_to_title_mappers,book_file_mapping,chapter_numbers_mapper
+from config import chapter_to_title_mappers,book_file_mapping
 
 def main():
     st.title("Book Companion")
@@ -15,8 +15,7 @@ def main():
 
     chapter_to_title_mapper=chapter_to_title_mappers[selected_book]
     filepath = book_file_mapping[selected_book]
-    chapter_numbers=chapter_numbers_mapper[selected_book]
-    chapters_dict = extract_content(filepath,chapter_numbers)  
+    chapters_dict = json.load(open(filepath,'r'))
     if 'selected_book' not in st.session_state:
         st.session_state.selected_book = None
     if 'selected_chapter_no' not in st.session_state:
@@ -28,20 +27,31 @@ def main():
         st.session_state.selected_book = selected_book
         st.session_state.selected_chapter_no = 1
     st.sidebar.title("Pages")
-    selected_tab = st.sidebar.radio("Go to", ["Home", "Summary", "Q&A"])
+    selected_tab = st.sidebar.radio("Go to", ["Select Chapter", "Book Companion"])
 
-    if selected_tab == "Home":
-        st.header("Home")
+    if selected_tab == "Select Chapter":
+        st.header("Select Chapter")
         chapter_options = [f"{num}: {name}" for num, name in chapter_to_title_mapper.items()]
         selected_chapter_option = st.selectbox("Select Chapter:", chapter_options)
         st.session_state.selected_chapter_no = int(selected_chapter_option.split(":")[0])
+    
 
-        st.session_state.num_words = st.slider("Select the number of words in the summary", 50, 200, 50)
 
-    if selected_tab == "Summary":
-        #st.header("Summary")
+    if selected_tab=="Book Companion":
+        st.header("Book Companion")
         if st.session_state.selected_chapter_no is not None:
-            chapter_text = chapters_dict[st.session_state.selected_chapter_no]
+            chapter_text = chapters_dict[str(st.session_state.selected_chapter_no)]
+            st.subheader("Chapter Content")
+            with st.expander("View Chapter Content"):
+                st.write(
+                    f"""
+                    <div style="height: 400px; overflow-y: scroll; border: 1px solid #ccc; padding: 10px;">
+                    {chapter_text}</div>
+                    """,
+                    unsafe_allow_html=True
+                )
+            st.subheader("Summary")
+            st.session_state.num_words = st.slider("Select the number of words in the summary", 50, 200, 50)
             generate_summary = st.button('Generate Summary')
             if generate_summary:
                 with st.spinner('Generating Summary...'):
@@ -54,24 +64,6 @@ def main():
                 st.subheader("Summary")
                 with st.expander("View Summary"):
                     st.write(summarized_text)
-        else:
-            st.write("Please select a chapter and the number of words from the Home tab.")
-
-    if selected_tab=="Q&A":
-        st.header("Q&A")
-        if st.session_state.selected_chapter_no is not None:
-            chapter_text = chapters_dict[st.session_state.selected_chapter_no]
-            print(chapter_text)
-            st.subheader("Chapter Content")
-            with st.expander("View Chapter Content"):
-                st.write(
-                    f"""
-                    <div style="height: 400px; overflow-y: scroll; border: 1px solid #ccc; padding: 10px;">
-                    {chapter_text}</div>
-                    """,
-                    unsafe_allow_html=True
-                )
-
             st.subheader("Ask a Question")
             user_question = st.text_input("Enter your question here:")
             get_answer = st.button('Get Answer')
