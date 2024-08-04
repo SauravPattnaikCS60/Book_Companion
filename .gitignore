@@ -1,5 +1,7 @@
 .venv/
+book_companion/
 hugging_face_models/
 __pycache__/
 *.pyc
-download_model.py
+src/download_model.py
+code_snap_files/
